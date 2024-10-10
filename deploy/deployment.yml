@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mstore
+  namespace: mstore
+  labels:
+    app: mstore
+spec:
+  type: NodePort
+  metadata:
+    labels:
+      app: mstore
+  ports:
+    - name: grpc
+      port: 8080
+      targetPort: 8080
+    - name: metrics
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: mstore
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mstore
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+  namespaceSelector:
+    matchNames:
+      - mstore
+  selector:
+    matchLabels:
+      app: mstore
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mstore
+  namespace: mstore
+spec:
+  selector:
+    matchLabels:
+      app: mstore
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mstore
+    spec:
+      containers:
+        - name: mstore
+          image: registry.brotherlogic-backend.com/brotherlogic/mstore:0.53.0 # {"$imagepolicy": "flux-system:mstore"}
+          ports:
+            - containerPort: 8080
+          args: ["--mongo=$(CONNECTION_STRING)"]
+          env:
+            - name: CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-admin-madmin
+                  namespace: mongo
+                  key: connectionString.standardSrv
+      imagePullSecrets:
+        - name: regcred
