@@ -11,11 +11,12 @@ import (
 )
 
 type TestClient struct {
-	mapper map[string][]byte
+	mapper  map[string][]byte
+	counter map[string]int64
 }
 
 func GetTestClient() MStoreClient {
-	return &TestClient{mapper: make(map[string][]byte)}
+	return &TestClient{mapper: make(map[string][]byte), counter: make(map[string]int64)}
 }
 
 func (c *TestClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadResponse, error) {
@@ -52,4 +53,10 @@ func (c *TestClient) GetKeys(ctx context.Context, req *pb.GetKeysRequest) (*pb.G
 func (c *TestClient) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	delete(c.mapper, req.GetKey())
 	return &pb.DeleteResponse{}, nil
+}
+
+func (c *TestClient) Count(ctx context.Context, req *pb.CountRequest) (*pb.CountResponse, error) {
+	value := c.counter[req.GetCounter()]
+	c.counter[req.GetCounter()] += 1
+	return &pb.CountResponse{Count: value}, nil
 }

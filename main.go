@@ -67,6 +67,10 @@ func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteR
 	return s.mongoClient.Delete(ctx, req)
 }
 
+func (s *Server) Count(ctx context.Context, req *pb.CountRequest) (*pb.CountResponse, error) {
+	return s.mongoClient.Count(ctx, req)
+}
+
 func main() {
 	flag.Parse()
 

@@ -23,6 +23,7 @@ const (
 	MStoreService_Write_FullMethodName   = "/mstore.MStoreService/Write"
 	MStoreService_GetKeys_FullMethodName = "/mstore.MStoreService/GetKeys"
 	MStoreService_Delete_FullMethodName  = "/mstore.MStoreService/Delete"
+	MStoreService_Count_FullMethodName   = "/mstore.MStoreService/Count"
 )
 
 // MStoreServiceClient is the client API for MStoreService service.
@@ -33,6 +34,7 @@ type MStoreServiceClient interface {
 	Write(ctx context.Context, in *WriteRequest, opts ...grpc.CallOption) (*WriteResponse, error)
 	GetKeys(ctx context.Context, in *GetKeysRequest, opts ...grpc.CallOption) (*GetKeysResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	Count(ctx context.Context, in *CountRequest, opts ...grpc.CallOption) (*CountResponse, error)
 }
 
 type mStoreServiceClient struct {
@@ -83,6 +85,16 @@ func (c *mStoreServiceClient) Delete(ctx context.Context, in *DeleteRequest, opt
 	return out, nil
 }
 
+func (c *mStoreServiceClient) Count(ctx context.Context, in *CountRequest, opts ...grpc.CallOption) (*CountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountResponse)
+	err := c.cc.Invoke(ctx, MStoreService_Count_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MStoreServiceServer is the server API for MStoreService service.
 // All implementations should embed UnimplementedMStoreServiceServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type MStoreServiceServer interface {
 	Write(context.Context, *WriteRequest) (*WriteResponse, error)
 	GetKeys(context.Context, *GetKeysRequest) (*GetKeysResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	Count(context.Context, *CountRequest) (*CountResponse, error)
 }
 
 // UnimplementedMStoreServiceServer should be embedded to have
@@ -111,6 +124,9 @@ func (UnimplementedMStoreServiceServer) GetKeys(context.Context, *GetKeysRequest
 }
 func (UnimplementedMStoreServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedMStoreServiceServer) Count(context.Context, *CountRequest) (*CountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Count not implemented")
 }
 func (UnimplementedMStoreServiceServer) testEmbeddedByValue() {}
 
@@ -204,6 +220,24 @@ func _MStoreService_Delete_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MStoreService_Count_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MStoreServiceServer).Count(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MStoreService_Count_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MStoreServiceServer).Count(ctx, req.(*CountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MStoreService_ServiceDesc is the grpc.ServiceDesc for MStoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -226,6 +260,10 @@ var MStoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _MStoreService_Delete_Handler,
+		},
+		{
+			MethodName: "Count",
+			Handler:    _MStoreService_Count_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

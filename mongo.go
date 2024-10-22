@@ -28,3 +28,7 @@ func (m *mongoClient) GetKeys(ctx context.Context, req *pb.GetKeysRequest) (*pb.
 func (m *mongoClient) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "Unimplmented")
 }
+
+func (m *mongoClient) Count(ctx context.Context, req *pb.CountRequest) (*pb.CountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "Unimplemented")
+}
