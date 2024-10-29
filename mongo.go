@@ -4,6 +4,7 @@ import (
 	"context"
 
 	pb "github.com/brotherlogic/mstore/proto"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,7 +19,11 @@ func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadRe
 }
 
 func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.WriteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "Unimplmented")
+	collection := m.client.Database("proto").Collection("protos")
+	_, err := collection.InsertOne(ctx, bson.D{
+		{"name", req.GetKey()},
+		{"value", string(req.GetValue().GetValue())}})
+	return &pb.WriteResponse{}, err
 }
 
 func (m *mongoClient) GetKeys(ctx context.Context, req *pb.GetKeysRequest) (*pb.GetKeysResponse, error) {
