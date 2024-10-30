@@ -95,6 +95,10 @@ func main() {
 	}
 	s.mongoClient = &mongoClient{client: mclient}
 
+	// Check that we've created a user for the db
+	err = s.mongoClient.Init(ctx)
+	log.Printf("Init err: %v", err)
+
 	err = mclient.Ping(ctx, readpref.Primary())
 	if err != nil {
 		_, err = s.gclient.CreateIssue(ctx, &ghbpb.CreateIssueRequest{

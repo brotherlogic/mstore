@@ -15,6 +15,13 @@ type mongoClient struct {
 	client *mongo.Client
 }
 
+func (m *mongoClient) Init(ctx context.Context) error {
+	r := m.client.Database("proto").RunCommand(context.Background(), bson.D{{"createUser", "admin"},
+		{"pwd", "pass"}, {"roles", []bson.M{{"role": "root", "db": "proto"}}}})
+
+	return r.Err()
+}
+
 func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "Unimplmented")
 }
