@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	pb "github.com/brotherlogic/mstore/proto"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,6 +24,7 @@ func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.Writ
 	_, err := collection.InsertOne(ctx, bson.D{
 		{"name", req.GetKey()},
 		{"value", string(req.GetValue().GetValue())}})
+	log.Printf("Write: %v", err)
 	return &pb.WriteResponse{}, err
 }
 
