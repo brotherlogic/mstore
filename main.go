@@ -119,7 +119,7 @@ func main() {
 			panic(err)
 		}
 	}
-
+	log.Printf("PING: %v", err)
 	cancel()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
