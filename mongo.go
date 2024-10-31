@@ -30,7 +30,7 @@ func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadRe
 }
 
 func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.WriteResponse, error) {
-	collection := m.client.Database("proto").Collection("protos")
+	collection := m.client.Database("admin").Collection("protos")
 	_, err := collection.InsertOne(ctx, bson.D{
 		{"name", req.GetKey()},
 		{"value", string(req.GetValue().GetValue())}})

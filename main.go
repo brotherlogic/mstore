@@ -82,14 +82,8 @@ func main() {
 	s.gclient = client
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	credential := options.Credential{
-		AuthSource: "admin",
-		Username:   "admin",
-		Password:   "pass",
-	}
 
-	clientOpts := options.Client().ApplyURI(*mongoAddress).
-		SetAuth(credential)
+	clientOpts := options.Client().ApplyURI(*mongoAddress)
 	mclient, err := mongo.Connect(ctx, clientOpts)
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
