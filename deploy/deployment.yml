@@ -66,6 +66,6 @@ spec:
                 secretKeyRef:
                   name: mongodb-admin-madmin
                   namespace: mongo
-                  key: connectionString.standardSrv
+                  key: connectionString.standard
       imagePullSecrets:
         - name: regcred
