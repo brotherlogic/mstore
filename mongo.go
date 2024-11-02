@@ -17,8 +17,8 @@ type mongoClient struct {
 
 func (m *mongoClient) Init(ctx context.Context) error {
 
-	r := m.client.Database("proto").RunCommand(context.Background(), bson.D{{"grantRolesToUser", "madmin"},
-		{"roles", []bson.M{{"role": "root", "db": "admin"}}}})
+	r := m.client.Database("proto").RunCommand(context.Background(), bson.D{{"createUser", "madmin"},
+		{"pwd", "pass"}, {"roles", []bson.M{{"role": "root", "db": "proto"}}}})
 	if r.Err() != nil {
 		return r.Err()
 	}
