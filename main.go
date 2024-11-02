@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	ghbpb "github.com/brotherlogic/githubridge/proto"
@@ -84,7 +85,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 
 	log.Printf("Logging in: %v", *mongoAddress)
-	clientOpts := options.Client().ApplyURI(*mongoAddress)
+	elems := strings.Split(*mongoAddress, "@")
+	clientOpts := options.Client().ApplyURI(fmt.Sprintf("%v%v", "mongodb://user:pass@", strings.Replace(elems[1], "admin", "proto")))
 	mclient, err := mongo.Connect(ctx, clientOpts)
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
