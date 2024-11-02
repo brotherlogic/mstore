@@ -56,7 +56,7 @@ spec:
     spec:
       containers:
         - name: mstore
-          image: registry.brotherlogic-backend.com/brotherlogic/mstore:0.16.0 # {"$imagepolicy": "flux-system:mstore"}
+          image: registry.brotherlogic-backend.com/brotherlogic/mstore:0.17.0 # {"$imagepolicy": "flux-system:mstore"}
           ports:
             - containerPort: 8080
           args: ["--mongo=$(CONNECTION_STRING)"]
