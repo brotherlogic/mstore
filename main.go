@@ -86,7 +86,7 @@ func main() {
 
 	log.Printf("Logging in: %v", *mongoAddress)
 	elems := strings.Split(*mongoAddress, "@")
-	clientOpts := options.Client().ApplyURI(fmt.Sprintf("%v%v", "mongodb://user:pass@", strings.Replace(elems[1], "admin", "proto")))
+	clientOpts := options.Client().ApplyURI(fmt.Sprintf("%v%v", "mongodb://user:pass@", strings.Replace(elems[1], "admin", "proto", -1)))
 	mclient, err := mongo.Connect(ctx, clientOpts)
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
