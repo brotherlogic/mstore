@@ -36,9 +36,8 @@ func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadRe
 
 	collection := m.client.Database("proto").Collection("protos")
 	err := collection.FindOne(ctx, bson.D{{"name", req.GetKey()}}).Decode(&result)
-	if err != nil {
-		return nil, fmt.Errorf("mongo read error: %w", err)
-	}
+	log.Printf("Read: %v", err)
+
 	if errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, status.Errorf(codes.NotFound, "unable to locate %v", req.GetKey())
 	} else if err != nil {
@@ -53,7 +52,6 @@ func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.Writ
 	_, err := collection.InsertOne(ctx, bson.D{
 		{"name", req.GetKey()},
 		{"value", string(req.GetValue().GetValue())}})
-	log.Printf("Write: %v", err)
 	return &pb.WriteResponse{}, err
 }
 
