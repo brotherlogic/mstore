@@ -50,8 +50,16 @@ func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadRe
 
 func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.WriteResponse, error) {
 	collection := m.client.Database("proto").Collection("protos")
+
+	// Pre clear this key temporarily whislt we deal with the issue of writes
+	_, err := collection.DeleteMany(ctx, bson.D{{"name", req.GetKey()}})
+	if err != nil {
+		log.Printf("Unable to delete on write path: %v", err)
+		return nil, err
+	}
+
 	opts := options.Update().SetUpsert(true)
-	_, err := collection.UpdateOne(
+	_, err = collection.UpdateOne(
 		ctx,
 		bson.D{{"name", req.GetKey()}},
 		bson.D{
