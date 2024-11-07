@@ -9,6 +9,7 @@ import (
 	pb "github.com/brotherlogic/mstore/proto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -49,10 +50,14 @@ func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadRe
 
 func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.WriteResponse, error) {
 	collection := m.client.Database("proto").Collection("protos")
-	_, err := collection.InsertOne(ctx, bson.D{
-		{"name", req.GetKey()},
-		{"value", string(req.GetValue().GetValue())}})
-	return &pb.WriteResponse{}, err
+	opts := options.FindOneAndUpdate().SetUpsert(true)
+	res := collection.FindOneAndUpdate(ctx,
+		bson.D{{"name", req.GetKey()}},
+		bson.D{
+			{"name", req.GetKey()},
+			{"value", string(req.GetValue().GetValue())}},
+		opts)
+	return &pb.WriteResponse{}, res.Err()
 }
 
 func (m *mongoClient) GetKeys(ctx context.Context, req *pb.GetKeysRequest) (*pb.GetKeysResponse, error) {
