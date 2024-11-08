@@ -45,6 +45,7 @@ metadata:
   name: mstore
   namespace: mstore
 spec:
+  nodeName: klust3
   selector:
     matchLabels:
       app: mstore
