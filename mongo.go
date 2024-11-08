@@ -64,15 +64,15 @@ func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.Writ
 		return nil, err
 	}
 
-	opts := options.Update().SetUpsert(true)
-	_, err = collection.UpdateOne(
+	opts := options.FindOneAndUpdate().SetUpsert(true)
+	res := collection.FindOneAndUpdate(
 		ctx,
 		bson.D{{"name", req.GetKey()}},
 		bson.D{
 			{"name", req.GetKey()},
 			{"value", string(req.GetValue().GetValue())}},
 		opts)
-	return &pb.WriteResponse{}, err
+	return &pb.WriteResponse{}, res.Err()
 }
 
 func (m *mongoClient) GetKeys(ctx context.Context, req *pb.GetKeysRequest) (*pb.GetKeysResponse, error) {
