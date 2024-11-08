@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	pb "github.com/brotherlogic/mstore/proto"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,6 +32,11 @@ func (m *mongoClient) Init(ctx context.Context) error {
 }
 
 func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadResponse, error) {
+	t1 := time.Now()
+	defer func() {
+		log.Printf("Read %v in %v", req.GetKey(), time.Since(t1))
+	}()
+
 	var result struct {
 		Value string
 	}
