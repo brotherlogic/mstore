@@ -61,7 +61,7 @@ func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.Writ
 	_, err := collection.DeleteMany(ctx, bson.D{{"name", req.GetKey()}})
 	if err != nil {
 		log.Printf("Unable to delete on write path: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("Delete failure: %w", err)
 	}
 
 	opts := options.Update().SetUpsert(true)
