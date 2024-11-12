@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	pb "github.com/brotherlogic/mstore/proto"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,6 +32,11 @@ func (m *mongoClient) Init(ctx context.Context) error {
 }
 
 func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadResponse, error) {
+	t1 := time.Now()
+	defer func() {
+		log.Printf("Read %v in %v", req.GetKey(), time.Since(t1))
+	}()
+
 	var result struct {
 		Value string
 	}
@@ -50,12 +56,21 @@ func (m *mongoClient) Read(ctx context.Context, req *pb.ReadRequest) (*pb.ReadRe
 
 func (m *mongoClient) Write(ctx context.Context, req *pb.WriteRequest) (*pb.WriteResponse, error) {
 	collection := m.client.Database("proto").Collection("protos")
+
+	// Pre clear this key temporarily whislt we deal with the issue of writes
+	_, err := collection.DeleteMany(ctx, bson.D{{"name", req.GetKey()}})
+	if err != nil {
+		log.Printf("Unable to delete on write path: %v", err)
+		return nil, err
+	}
+
 	opts := options.FindOneAndUpdate().SetUpsert(true)
-	res := collection.FindOneAndUpdate(ctx,
+	res := collection.FindOneAndUpdate(
+		ctx,
 		bson.D{{"name", req.GetKey()}},
-		bson.D{
+		bson.M{"$set": bson.D{
 			{"name", req.GetKey()},
-			{"value", string(req.GetValue().GetValue())}},
+			{"value", string(req.GetValue().GetValue())}}},
 		opts)
 	return &pb.WriteResponse{}, res.Err()
 }
