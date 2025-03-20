@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/brotherlogic/githubridge v0.2802.0
 	github.com/prometheus/client_golang v1.20.4
-	github.com/redis/go-redis/v9 v9.6.1
+	github.com/redis/go-redis/v9 v9.6.3
 	go.mongodb.org/mongo-driver v1.17.1
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.35.1
